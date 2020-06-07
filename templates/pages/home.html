@@ -1,0 +1,40 @@
+{% extends 'base.html' %}
+
+<!-- Header Title -->
+{% block head_title %} Something Twitterish {% endblock head_title%}
+
+<!-- Body Content -->
+{% block content %}
+<h1>Welcome to something Twitterish</h1>
+
+<div id="tweets">
+	Loading...
+</div>
+
+<script>
+	const tweetElement = document.getElementById('tweets');
+
+	const xhr = new XMLHttpRequest();
+	const method = 'GET';
+	const url = '/tweets';
+	const responseType = 'json';
+
+	xhr.responseType = responseType;
+	xhr.open(method, url);
+	xhr.onload = () => {
+		const serverResponse = xhr.response;
+		var listedItems = serverResponse.response;
+		var finalTweetStr = '';
+		var i;
+		for (i = 0; i < listedItems.length; i++) {
+			const el = listedItems[i];
+			var currentItem = `<h1>${el.id}</h1><p>${el.content}</p>`;
+			finalTweetStr += currentItem;
+		}
+		tweetElement.innerHTML = finalTweetStr;
+		// console.log(listedItems);
+	};
+	xhr.send();
+</script>
+
+{% endblock content %}

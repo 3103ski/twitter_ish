@@ -21,7 +21,11 @@
 		<title>{% block head_title %}{% endblock head_title %}</title>
 	</head>
 	<body>
-		{% block content %}
+		{% include 'components/navbar.html' %}
+		<!--  -->
+		<div class="container">
+			{% block content %}
+		</div>
 		<!--  -->
 		{% endblock content %}
 

@@ -5,9 +5,13 @@
 
 <!-- Body Content -->
 {% block content %}
-<h1>Welcome to something Twitterish</h1>
+<div class="row text-center">
+	<div class="col mb-4">
+		<h2>Welcome To Twitterish</h2>
+	</div>
+</div>
 
-<div id="tweets">
+<div class="row" id="tweets">
 	Loading...
 </div>
 
@@ -29,7 +33,9 @@
 
 	formatTweetElement = (tweet) => {
 		var formattedTweet = `
-	           <div class="mb-4 tweet" id="tweet-${tweet.id}">
+	           <div class="col-12 col-md-10 mx-auto border rounded py-3 mb-4 tweet" id="tweet-${
+								tweet.id
+							}">
 	               <p>${tweet.content}</p>
 	               <div class='btn-group'>
 	                   ${likeBtn(tweet)}

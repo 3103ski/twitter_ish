@@ -19,6 +19,26 @@
 	const url = '/tweets';
 	const responseType = 'json';
 
+	handleDidLike = (tweet_id, currCount) => {
+		console.log(tweet_id, +' ' + currCount);
+	};
+
+	likeBtn = (tweet) => {
+		return `<button class='btn btn-primary' onClick=handleDidLike(${tweet.id},${tweet.likes})>${tweet.likes} Likes</button>`;
+	};
+
+	formatTweetElement = (tweet) => {
+		var formattedTweet = `
+	           <div class="mb-4 tweet" id="tweet-${tweet.id}">
+	               <p>${tweet.content}</p>
+	               <div class='btn-group'>
+	                   ${likeBtn(tweet)}
+	               </div>
+	           </div>
+	       `;
+		return formattedTweet;
+	};
+
 	xhr.responseType = responseType;
 	xhr.open(method, url);
 	xhr.onload = () => {
@@ -26,13 +46,11 @@
 		var listedItems = serverResponse.response;
 		var finalTweetStr = '';
 		var i;
-		for (i = 0; i < listedItems.length; i++) {
+		for (i = 0; i < 3; i++) {
 			const el = listedItems[i];
-			var currentItem = `<h1>${el.id}</h1><p>${el.content}</p>`;
-			finalTweetStr += currentItem;
+			finalTweetStr += formatTweetElement(el);
 		}
 		tweetElement.innerHTML = finalTweetStr;
-		// console.log(listedItems);
 	};
 	xhr.send();
 </script>

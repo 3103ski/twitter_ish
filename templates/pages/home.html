@@ -11,17 +11,124 @@
 	</div>
 </div>
 
+<div class="row mb-3">
+	<div class="col-md-4 mx-auto col-10">
+		<form
+			class="form"
+			id="tweet-create-form"
+			method="POST"
+			action="/create-tweet"
+		>
+			{% csrf_token %}
+			<div class="d-none alert alert-danger" id="tweet-create-form-error"></div>
+			<input type="hidden" value="/" name="next" />
+			<textarea
+				class="form-control mb-1"
+				name="content"
+				placeholder="Tweet something..."
+				cols="30"
+				rows="7"
+				required="required"
+			></textarea>
+			<button type="submit" class="btn btn-primary">Tweet</button>
+		</form>
+	</div>
+</div>
+
 <div class="row" id="tweets">
 	Loading...
 </div>
 
 <script>
-	const tweetElement = document.getElementById('tweets');
+	handleTweetCreateFormError = (msg, display) => {
+		var myErrorDiv = document.getElementById('tweet-create-form-error');
+		if (display === true) {
+			myErrorDiv.setAttribute('class', 'd-block alert alert-danger');
+			myErrorDiv.innerText = msg;
+		} else {
+			myErrorDiv.setAttribute('class', 'd-none alert alert-danger');
+		}
+	};
 
-	const xhr = new XMLHttpRequest();
-	const method = 'GET';
-	const url = '/tweets';
-	const responseType = 'json';
+	handleTweetCreateFormDidSubmit = (event) => {
+		event.preventDefault();
+
+		const myForm = event.target;
+		const myFormData = new FormData(myForm);
+		const url = myForm.getAttribute('action');
+		const method = myForm.getAttribute('method');
+		const xhr = new XMLHttpRequest();
+
+		xhr.open(method, url);
+
+		xhr.setRequestHeader('HTTP_X_REQUESTED_WITH', 'XMLHttpRequest');
+		xhr.setRequestHeader('x-requested-with', 'XMLHttpRequest');
+		xhr.responseType = 'json';
+
+		xhr.onload = () => {
+			if (xhr.status === 201) {
+				handleTweetCreateFormError('', false);
+				const newTweet = xhr.response;
+				const newTweetElement = formatTweetElement(newTweet);
+				const allTweets = tweetContainerElement.innerHTML;
+				tweetContainerElement.innerHTML = newTweetElement + allTweets;
+				myForm.reset();
+			} else if (xhr.status === 400) {
+				const errorJson = xhr.response;
+				const contentError = errorJson.content;
+				let contentErrorMsg;
+
+				if (contentError) {
+					contentErrorMsg = contentError[0];
+					if (contentErrorMsg) {
+						handleTweetCreateFormError(contentErrorMsg, true);
+					} else {
+						alert('An error occured. Please try again.');
+					}
+				} else {
+					alert('An error occured. Please try again.');
+				}
+			} else if (xhr.status === 500) {
+				alert('There was a server error, try again.');
+			}
+		};
+
+		xhr.onerror = function () {
+			alert('An error ocured. Please try again.');
+		};
+		xhr.send(myFormData);
+	};
+
+	const tweetCreateForm = document.getElementById('tweet-create-form');
+	tweetCreateForm.addEventListener('submit', handleTweetCreateFormDidSubmit);
+
+	const tweetContainerElement = document.getElementById('tweets');
+
+	loadTweets = (tweetElement) => {
+		const xhr = new XMLHttpRequest();
+		const method = 'GET';
+		const url = '/tweets';
+		const responseType = 'json';
+
+		xhr.responseType = responseType;
+		xhr.open(method, url);
+		xhr.onload = () => {
+			const serverResponse = xhr.response;
+
+			var listedItems = serverResponse.response;
+			var finalTweetStr = '';
+			var i;
+
+			for (i = 0; i < listedItems.length; i++) {
+				const el = listedItems[i];
+				finalTweetStr += formatTweetElement(el);
+			}
+			tweetElement.innerHTML = finalTweetStr;
+		};
+		xhr.send();
+	};
+
+	loadTweets(tweetContainerElement);
 
 	handleDidLike = (tweet_id, currCount) => {
 		console.log(tweet_id, +' ' + currCount);
@@ -44,21 +151,6 @@
 	       `;
 		return formattedTweet;
 	};
-
-	xhr.responseType = responseType;
-	xhr.open(method, url);
-	xhr.onload = () => {
-		const serverResponse = xhr.response;
-		var listedItems = serverResponse.response;
-		var finalTweetStr = '';
-		var i;
-		for (i = 0; i < 3; i++) {
-			const el = listedItems[i];
-			finalTweetStr += formatTweetElement(el);
-		}
-		tweetElement.innerHTML = finalTweetStr;
-	};
-	xhr.send();
 </script>
 
 {% endblock content %}

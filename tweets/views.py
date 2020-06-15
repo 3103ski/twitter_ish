@@ -11,6 +11,9 @@ from .forms import TweetForm
 from .serializers import TweetSerializer
 # third party
 from rest_framework.response import Response
+from rest_framework.authentication import SessionAuthentication
+from rest_framework.decorators import api_view, permission_classes, authentication_classes
+from rest_framework.permissions import IsAuthenticated
 
 
 # ======================
@@ -28,49 +31,32 @@ def home_view(request, *args, **kwargs):
     return render(request, "pages/home.html", context={}, status=200)
 
 
+@api_view(['POST'])
+# @authentication_classes([SessionAuthentication])
+@permission_classes([IsAuthenticated])
 def tweet_create_view(request, *args, **kwargs):
-    data = request.POST or None
-    serializer = TweetSerializer(data=data)
-    if serializer.is_valid():
+    serializer = TweetSerializer(data=request.POST)
+    if serializer.is_valid(raise_exception=True):
         serializer.save(user=request.user)
         return JsonResponse(serializer.data, status=201)
     return JsonResponse({}, status=400)
 
 
+@api_view(['GET'])
 def tweet_list_view(request, *args, **kwargs):
-    """
-        REST API VIEW
-        Consume by Javascript or Swift or Java/IOS/Android
-        Return JSON data
-    """
     qs = Tweet.objects.all()
-    tweets_list = [x.serialize() for x in qs]
-    data = {
-        "response": tweets_list
-    }
-    return JsonResponse(data)
+    serializer = TweetSerializer(qs, many=True)
+    return Response(serializer.data, status=200)
 
 
-def tweet_detail_view(request, tweet_id, * args, **kwargs):
-    """
-        REST API VIEW
-        Consume by Javascript or Swift or Java/IOS/Android
-        Return JSON data
-    """
-    data = {
-        "id": tweet_id,
-        # "image_path": obj.image.url
-    }
-    status = 200
-
-    try:
-        obj = Tweet.objects.get(id=tweet_id)
-        data['content'] = obj.content
-    except:
-        data['message'] = "Not Found"
-        status = 404
-
-    return JsonResponse(data, status=status)
+@api_view(['GET'])
+def tweet_detail_view(request, tweet_id, *args, **kwargs):
+    qs = Tweet.objects.filter(id=tweet_id)
+    if not qs.exists():
+        return Response({}, satus=404)
+    obj = qs.first()
+    serializer = TweetSerializer(obj)
+    return Response(serializer.data, status=200)
 
 
 # ==============================
@@ -112,3 +98,39 @@ def tweet_create_view_pure_django(request, *args, **kwargs):
             return JsonResponse(form.errors, status=400)
 
     return render(request, 'components/form.html', context={"form": form})
+
+
+def tweet_list_view_pure_django(request, *args, **kwargs):
+    """
+        REST API VIEW
+        Consume by Javascript or Swift or Java/IOS/Android
+        Return JSON data
+    """
+    qs = Tweet.objects.all()
+    tweets_list = [x.serialize() for x in qs]
+    data = {
+        "response": tweets_list
+    }
+    return JsonResponse(data)
+
+
+def tweet_detail_view_pure_django(request, tweet_id, * args, **kwargs):
+    """
+        REST API VIEW
+        Consume by Javascript or Swift or Java/IOS/Android
+        Return JSON data
+    """
+    data = {
+        "id": tweet_id,
+        # "image_path": obj.image.url
+    }
+    status = 200
+
+    try:
+        obj = Tweet.objects.get(id=tweet_id)
+        data['content'] = obj.content
+    except:
+        data['message'] = "Not Found"
+        status = 404
+
+    return JsonResponse(data, status=status)

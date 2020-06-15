@@ -97,6 +97,9 @@
 			} else if (xhr.status === 401) {
 				alert('You must be logged in to post a message!');
 				window.location.href = '/login';
+			} else if (xhr.status === 403) {
+				alert('You must be logged in to post a message!');
+				window.location.href = '/login';
 			} else if (xhr.status === 500) {
 				alert('There was a server error, try again.');
 			}
@@ -139,12 +142,11 @@
 		xhr.open(method, url);
 		xhr.onload = () => {
 			const serverResponse = xhr.response;
+			const listedItems = serverResponse;
 
-			var listedItems = serverResponse.response;
 			var finalTweetStr = '';
-			var i;
 
-			for (i = 0; i < listedItems.length; i++) {
+			for (let i = 0; i < listedItems.length; i++) {
 				const el = listedItems[i];
 				finalTweetStr += formatTweetElement(el);
 			}

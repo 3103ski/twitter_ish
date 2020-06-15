@@ -40,8 +40,13 @@
 </div>
 
 <script>
+	// ***********************
+	//   Handler Functions
+	// ***********************
+
 	handleTweetCreateFormError = (msg, display) => {
 		var myErrorDiv = document.getElementById('tweet-create-form-error');
+
 		if (display === true) {
 			myErrorDiv.setAttribute('class', 'd-block alert alert-danger');
 			myErrorDiv.innerText = msg;
@@ -60,17 +65,17 @@
 		const xhr = new XMLHttpRequest();
 
 		xhr.open(method, url);
-
 		xhr.setRequestHeader('HTTP_X_REQUESTED_WITH', 'XMLHttpRequest');
 		xhr.setRequestHeader('x-requested-with', 'XMLHttpRequest');
 		xhr.responseType = 'json';
-
 		xhr.onload = () => {
 			if (xhr.status === 201) {
 				handleTweetCreateFormError('', false);
+
 				const newTweet = xhr.response;
 				const newTweetElement = formatTweetElement(newTweet);
 				const allTweets = tweetContainerElement.innerHTML;
+
 				tweetContainerElement.innerHTML = newTweetElement + allTweets;
 				myForm.reset();
 			} else if (xhr.status === 400) {
@@ -80,6 +85,7 @@
 
 				if (contentError) {
 					contentErrorMsg = contentError[0];
+
 					if (contentErrorMsg) {
 						handleTweetCreateFormError(contentErrorMsg, true);
 					} else {
@@ -102,12 +108,28 @@
 		xhr.send(myFormData);
 	};
 
-	const tweetCreateForm = document.getElementById('tweet-create-form');
-	tweetCreateForm.addEventListener('submit', handleTweetCreateFormDidSubmit);
+	handleDidLike = (tweet_id, currCount) => {
+		console.log(tweet_id, +' ' + currCount);
+	};
 
+	// *********************
+	//   Tweets On Load
+	// *********************
+
+	const tweetCreateForm = document.getElementById('tweet-create-form');
 	const tweetContainerElement = document.getElementById('tweets');
 
-	loadTweets = (tweetElement) => {
+	// load tweets
+	loadTweets(tweetContainerElement);
+
+	// reload list after adding tweet
+	tweetCreateForm.addEventListener('submit', handleTweetCreateFormDidSubmit);
+
+	// *********************
+	//   helper functions
+	// *********************
+
+	function loadTweets(tweetElement) {
 		const xhr = new XMLHttpRequest();
 		const method = 'GET';
 		const url = '/tweets';
@@ -129,13 +151,7 @@
 			tweetElement.innerHTML = finalTweetStr;
 		};
 		xhr.send();
-	};
-
-	loadTweets(tweetContainerElement);
-
-	handleDidLike = (tweet_id, currCount) => {
-		console.log(tweet_id, +' ' + currCount);
-	};
+	}
 
 	likeBtn = (tweet) => {
 		return `<button class='btn btn-primary' onClick=handleDidLike(${tweet.id},${tweet.likes})>${tweet.likes} Likes</button>`;

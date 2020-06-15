@@ -1,10 +1,18 @@
+# python
 import random
+# django
 from django.conf import settings
 from django.db import models
 
-# Create your models here.
+# ======================
+#   Local Variables
+# ======================
 
 User = settings.AUTH_USER_MODEL
+
+# ======================
+#   Tweets Models
+# ======================
 
 
 class Tweet(models.Model):

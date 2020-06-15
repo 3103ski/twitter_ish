@@ -1,7 +1,11 @@
+# django
 from django.contrib import admin
+# internal
 from .models import Tweet
 
-# Register your models here.
+# ======================
+#   Admin Class
+# ======================
 
 
 class TweetAdmin(admin.ModelAdmin):

@@ -13,15 +13,27 @@ ALLOWED_HOSTS = settings.ALLOWED_HOSTS
 
 
 def home_view(request, *args, **kwargs):
+    print(request.user)
     return render(request, "pages/home.html", context={}, status=200)
 
 
 def tweet_create_view(request, *args, **kwargs):
+    '''
+    Create REST API Create View using Django Rest Framework
+    '''
+    user = request.user
+    if not request.user.is_authenticated:
+        user = None
+        if request.is_ajax():
+            return JsonResponse({}, status=401)
+        return redirect(settings.LOGIN_URL)
+
     form = TweetForm(request.POST or None)
     next_url = request.POST.get('next') or None
 
     if form.is_valid():
         obj = form.save(commit=False)
+        obj.user = request.user or None
         obj.save()
 
         if request.is_ajax():

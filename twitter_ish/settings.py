@@ -24,6 +24,7 @@ SECRET_KEY = '!qi8-)p4+=79*6h-l-$0y24=0ewdd8ds_tqbo$8(s5y8nn^34('
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
+LOGIN_URL = "/login"
 
 ALLOWED_HOSTS = ['127.0.0.1', 'http://google.com']
 
@@ -37,6 +38,9 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    # third party
+    'rest_framework',
+    # internal
     'tweets',
 ]
 

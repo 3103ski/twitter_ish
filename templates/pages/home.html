@@ -112,15 +112,13 @@
 	};
 
 	handleTweetAction = (tweet_id, currCount, action) => {
-		console.log(tweet_id, +' ' + currCount);
-
 		const url = 'api/tweets/action';
 		const method = 'POST';
-
 		const data = JSON.stringify({
 			id: tweet_id,
 			action: action,
 		});
+
 		const xhr = new XMLHttpRequest();
 		const csrftoken = getCookie('csrftoken');
 
@@ -131,9 +129,9 @@
 		xhr.setRequestHeader('X-CSRFToken', csrftoken);
 
 		xhr.onload = function () {
-			console.log(xhr.status, xhr.response);
 			loadTweets(tweetContainerElement);
 		};
+
 		xhr.send(data);
 		return;
 	};

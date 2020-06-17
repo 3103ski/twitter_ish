@@ -1,3 +1,11 @@
+# django
+from django.conf.auth import get_user_model
 from django.test import TestCase
+# internal
+from .models import Tweet
 
-# Create your tests here.
+User = get_user_model()
+
+
+class TweetTestCase(TestCase):
+    def setup(self):

@@ -11,14 +11,18 @@
    -> User + who they follow?
 
 2. Tweets
-   -> Creating **DONE
-   -> Text **DONE
-   -> Image -> Media storage server of some kind
-   -> Delete
-   -> Retweeting
-   -> Liking
 
-3. Following / Followers
+   - User Permissions
+     - Craeting
+       -> Text
+       -> Image -> Media Storage Server
+     - Delete
+     - Retweeting
+       -> Read only serializer
+       -> Create only serializer
+     - Liking or Unliking
+
+3) Following / Followers
    ->
 
 Longer Term Todos

@@ -14,6 +14,7 @@ SECRET_KEY = '!qi8-)p4+=79*6h-l-$0y24=0ewdd8ds_tqbo$8(s5y8nn^34('
 DEBUG = True
 LOGIN_URL = "/login"
 
+TWEET_ACTION_OPTIONS = ["like", "unlike", "retweet"]
 MAX_TWEET_LENGTH = 240
 
 ALLOWED_HOSTS = ['127.0.0.1', 'http://google.com']
@@ -114,13 +115,17 @@ USE_TZ = True
 
 STATIC_URL = '/static/'
 
+DEFAULT_RENDERER_CLASSES = [
+    'rest_framework.renderers.JSONRenderer'
+]
+
+if DEBUG:
+    DEFAULT_RENDERER_CLASSES += [
+        'rest_framework.renderers.BrowsableAPIRenderer']
+
 REST_FRAMEWORK = {
     "DEFAULT_AUTHENTICATION_CLASSES": [
         'rest_framework.authentication.SessionAuthentication'
     ],
-    'DEFAULT_RENDERER_CLASSES': [
-        'rest_framework.renderers.JSONRenderer'
-        # 'rest_framework.renderers.BrowsableAPIRenderer',
-    ]
-
+    'DEFAULT_RENDERER_CLASSES': DEFAULT_RENDERER_CLASSES
 }
